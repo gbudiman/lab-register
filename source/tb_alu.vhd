@@ -10,6 +10,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
+use ieee.numeric_std.all;
 --use gold_lib.all;   --UNCOMMENT if you're using a GOLD model
 
 entity tb_alu is
@@ -56,25 +57,32 @@ architecture TEST of tb_alu is
   signal ZERO : STD_LOGIC;
 
 -- signal <name> : <type>;
-
-  procedure myShift(
-    constant data: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    constant by: IN integer;
-    SIGNAL sA, sB: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)) IS
-  BEGIN
-    sA <= data;
-    sB <= CONV_STD_LOGIC_VECTOR(by, 32);
-    wait for 1 us;
-  END myShift;
   
-  procedure myAdd(
-    constant intA, intB: IN integer;
-    SIGNAL aA, aB: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)) IS
+  procedure myOp(
+    constant intA, intB, op: IN integer;
+    SIGNAL toCheck: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aA, aB: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL opcode: OUT STD_LOGIC_VECTOR(2 DOWNTO 0)) IS
   BEGIN
+    opcode <= CONV_STD_LOGIC_VECTOR(op, 3);
     aA <= CONV_STD_LOGIC_VECTOR(intA, 32);
     aB <= CONV_STD_LOGIC_VECTOR(intB, 32);
-    wait for 1 us;
-  END myAdd;
+    wait for 8 ns;
+    IF (op = 2) THEN
+      IF intA + intB = CONV_INTEGER(toCheck) THEN
+        report "Addition correct" severity note;
+      ELSE
+        report "Addition FAILED" severity error;
+      END IF;
+    ELSIF (op = 3) THEN
+      IF intA - intB = CONV_INTEGER(toCheck) THEN
+        report "Subtraction correct" severity note;
+      ELSE
+        report "Subtraction FAILED" severity note;
+      END IF;
+    END IF;
+    wait for 2 ns;
+  END myOp;
   
 begin
   DUT: alu port map(
@@ -96,8 +104,18 @@ process
     --for i in 0 to 34 loop
       --myShift(x"A5A5A5A5", i, A, B);
     --end loop;
-    myAdd(90, 32, A, B);
-    myAdd(1532, 3516, A, B);
+    myOp(90, 32, 3, OUTPUT, A, B, opcode);
+    myOp(30, 1000, 3, OUTPUT, A, B, opcode);
+    myOp(5000, 1, 3, OUTPUT, A, B, opcode);
+    myOp(1532, 3516, 3, OUTPUT, A, B, opcode);
+    myOp(2147483647, 1, 2, OUTPUT, A, B, opcode);
+    myOp(2147483647, -2147483648, 3, OUTPUT, A, B, opcode);
+    myOp(43613661, -1, 6, OUTPUT, A, B, opcode);
+    myOp(4361, 0, 4, OUTPUT, A, B, opcode);
+    myOp(724882, 0, 7, OUTPUT, A, B, opcode);
+    --myOp(x"3DFBA9C0", x"FFFFFFFF", 6, OUTPUT, A, B, opcode);
+    --myOp(x"9163BA31", x"00000000", 4, OUTPUT, A, B, opcode);
+    --myOp(x"FFFFFFFF", x"00000000", 7, OUTPUT, A, B, opcode);
     wait;
 -- Insert TEST BENCH Code Here
 
