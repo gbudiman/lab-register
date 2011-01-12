@@ -46,12 +46,15 @@ begin
   begin
     -- one register if statement
 		if (nReset = '0') then
-			-- Reset here
+			-- Reset all registers value to 0
 			for s in 1 to 31 loop
 				reg(s) <= x"00000000";
 			end loop;
     elsif (rising_edge(clk)) then
 			-- Set register here
+			-- en should only have 1 out of 32 bits asserted
+			-- en would have value other than listed below if WEN is 0
+			-- (see en statement below)
 			CASE en IS
 				WHEN x"00000002" => reg(1) <= WDAT;
 				WHEN x"00000004" => reg(2) <= WDAT;
@@ -89,9 +92,11 @@ begin
     end if;
   end process;
 
-  --decoder for assigning en:
-	en <= x"00000000" WHEN WEN = '0' ELSE
-				x"00000000" WHEN WSEL = "00000" ELSE
+  -- decoder for assigning en:
+  -- only 1 bit should be asserted at any time 
+  -- x"00000000" is reserved to do literally nothing
+	en <= x"00000000" WHEN WEN = '0' ELSE -- when WEN is low, nothing should be written
+				x"00000000" WHEN WSEL = "00000" ELSE -- attempt to write to reg(0) should change nothing
 				x"00000002" WHEN WSEL = "00001" ELSE
 				x"00000004" WHEN WSEL = "00010" ELSE
 				x"00000008" WHEN WSEL = "00011" ELSE
@@ -123,11 +128,11 @@ begin
 				x"20000000" WHEN WSEL = "11101" ELSE
 				x"40000000" WHEN WSEL = "11110" ELSE
 				x"80000000" WHEN WSEL = "11111" ELSE
-				x"FFFFFFFF";
+				x"FFFFFFFF"; -- just in case...
 
 	--rsel muxes:
 	with rsel1 select
-		rdat1 <=	x"00000000" when "00000",
+		rdat1 <=	x"00000000" when "00000", -- always read 0
 							reg(1) when "00001",
 							reg(2) when "00010",
 							reg(3) when "00011",
@@ -160,7 +165,8 @@ begin
 							reg(30) when "11110",
 							reg(31) when "11111",
 							BAD1 when others;
-
+							
+  -- similar to above
 	with rsel2 select
 		rdat2 <=	x"00000000" when "00000",
 							reg(1) when "00001",
