@@ -47,44 +47,44 @@ begin
     -- one register if statement
 		if (nReset = '0') then
 			-- Reset here
-			for s in 0 to 31 loop
-				REGISTER32[s] = x"00000000";
+			for s in 1 to 31 loop
+				reg(s) <= x"00000000";
 			end loop;
     elsif (rising_edge(clk)) then
 			-- Set register here
 			CASE en IS
-				WHEN x"00000002" THEN REGISTER32[1] = WDAT;
-				WHEN x"00000004" THEN REGISTER32[2] = WDAT;
-				WHEN x"00000008" THEN REGISTER32[3] = WDAT;
-				WHEN x"00000010" THEN REGISTER32[4] = WDAT;
-				WHEN x"00000020" THEN REGISTER32[5] = WDAT;
-				WHEN x"00000040" THEN REGISTER32[6] = WDAT;
-				WHEN x"00000080" THEN REGISTER32[7] = WDAT;
-				WHEN x"00000100" THEN REGISTER32[8] = WDAT;
-				WHEN x"00000200" THEN REGISTER32[9] = WDAT;
-				WHEN x"00000400" THEN REGISTER32[10] = WDAT;
-				WHEN x"00000800" THEN REGISTER32[11] = WDAT;
-				WHEN x"00001000" THEN REGISTER32[12] = WDAT;
-				WHEN x"00002000" THEN REGISTER32[13] = WDAT;
-				WHEN x"00004000" THEN REGISTER32[14] = WDAT;
-				WHEN x"00008000" THEN REGISTER32[15] = WDAT;
-				WHEN x"00010000" THEN REGISTER32[16] = WDAT;
-				WHEN x"00020000" THEN REGISTER32[17] = WDAT;
-				WHEN x"00040000" THEN REGISTER32[18] = WDAT;
-				WHEN x"00080000" THEN REGISTER32[19] = WDAT;
-				WHEN x"00100000" THEN REGISTER32[20] = WDAT;
-				WHEN x"00200000" THEN REGISTER32[21] = WDAT;
-				WHEN x"00400000" THEN REGISTER32[22] = WDAT;
-				WHEN x"00800000" THEN REGISTER32[23] = WDAT;
-				WHEN x"01000000" THEN REGISTER32[24] = WDAT;
-				WHEN x"02000000" THEN REGISTER32[25] = WDAT;
-				WHEN x"04000000" THEN REGISTER32[26] = WDAT;
-				WHEN x"08000000" THEN REGISTER32[27] = WDAT;
-				WHEN x"10000000" THEN REGISTER32[28] = WDAT;
-				WHEN x"20000000" THEN REGISTER32[29] = WDAT;
-				WHEN x"40000000" THEN REGISTER32[30] = WDAT;
-				WHEN x"80000000" THEN REGISTER32[31] = WDAT;
-				WHEN OTHERS;
+				WHEN x"00000002" => reg(1) <= WDAT;
+				WHEN x"00000004" => reg(2) <= WDAT;
+				WHEN x"00000008" => reg(3) <= WDAT;
+				WHEN x"00000010" => reg(4) <= WDAT;
+				WHEN x"00000020" => reg(5) <= WDAT;
+				WHEN x"00000040" => reg(6) <= WDAT;
+				WHEN x"00000080" => reg(7) <= WDAT;
+				WHEN x"00000100" => reg(8) <= WDAT;
+				WHEN x"00000200" => reg(9) <= WDAT;
+				WHEN x"00000400" => reg(10) <= WDAT;
+				WHEN x"00000800" => reg(11) <= WDAT;
+				WHEN x"00001000" => reg(12) <= WDAT;
+				WHEN x"00002000" => reg(13) <= WDAT;
+				WHEN x"00004000" => reg(14) <= WDAT;
+				WHEN x"00008000" => reg(15) <= WDAT;
+				WHEN x"00010000" => reg(16) <= WDAT;
+				WHEN x"00020000" => reg(17) <= WDAT;
+				WHEN x"00040000" => reg(18) <= WDAT;
+				WHEN x"00080000" => reg(19) <= WDAT;
+				WHEN x"00100000" => reg(20) <= WDAT;
+				WHEN x"00200000" => reg(21) <= WDAT;
+				WHEN x"00400000" => reg(22) <= WDAT;
+				WHEN x"00800000" => reg(23) <= WDAT;
+				WHEN x"01000000" => reg(24) <= WDAT;
+				WHEN x"02000000" => reg(25) <= WDAT;
+				WHEN x"04000000" => reg(26) <= WDAT;
+				WHEN x"08000000" => reg(27) <= WDAT;
+				WHEN x"10000000" => reg(28) <= WDAT;
+				WHEN x"20000000" => reg(29) <= WDAT;
+				WHEN x"40000000" => reg(30) <= WDAT;
+				WHEN x"80000000" => reg(31) <= WDAT;
+				WHEN OTHERS => NULL;
 			END CASE;
     end if;
   end process;
@@ -128,72 +128,72 @@ begin
 	--rsel muxes:
 	with rsel1 select
 		rdat1 <=	x"00000000" when "00000",
-							REGISTER32[1] when "00001";
-							REGISTER32[2] when "00010";
-							REGISTER32[3] when "00011";
-							REGISTER32[4] when "00100";
-							REGISTER32[5] when "00101";
-							REGISTER32[6] when "00110";
-							REGISTER32[7] when "00111";
-							REGISTER32[8] when "01000";
-							REGISTER32[9] when "01001";
-							REGISTER32[10] when "01010";
-							REGISTER32[11] when "01011";
-							REGISTER32[12] when "01100";
-							REGISTER32[13] when "01101";
-							REGISTER32[14] when "01110";
-							REGISTER32[15] when "01111";
-							REGISTER32[16] when "10000";
-							REGISTER32[17] when "10001";
-							REGISTER32[18] when "10010";
-							REGISTER32[19] when "10011";
-							REGISTER32[20] when "10100";
-							REGISTER32[21] when "10101";
-							REGISTER32[22] when "10110";
-							REGISTER32[23] when "10111";
-							REGISTER32[24] when "11000";
-							REGISTER32[25] when "11001";
-							REGISTER32[26] when "11010";
-							REGISTER32[27] when "11011";
-							REGISTER32[28] when "11100";
-							REGISTER32[29] when "11101";
-							REGISTER32[30] when "11110";
-							REGISTER32[31] when "11111";
+							reg(1) when "00001",
+							reg(2) when "00010",
+							reg(3) when "00011",
+							reg(4) when "00100",
+							reg(5) when "00101",
+							reg(6) when "00110",
+							reg(7) when "00111",
+							reg(8) when "01000",
+							reg(9) when "01001",
+							reg(10) when "01010",
+							reg(11) when "01011",
+							reg(12) when "01100",
+							reg(13) when "01101",
+							reg(14) when "01110",
+							reg(15) when "01111",
+							reg(16) when "10000",
+							reg(17) when "10001",
+							reg(18) when "10010",
+							reg(19) when "10011",
+							reg(20) when "10100",
+							reg(21) when "10101",
+							reg(22) when "10110",
+							reg(23) when "10111",
+							reg(24) when "11000",
+							reg(25) when "11001",
+							reg(26) when "11010",
+							reg(27) when "11011",
+							reg(28) when "11100",
+							reg(29) when "11101",
+							reg(30) when "11110",
+							reg(31) when "11111",
 							BAD1 when others;
 
 	with rsel2 select
 		rdat2 <=	x"00000000" when "00000",
-							REGISTER32[1] when "00001";
-							REGISTER32[2] when "00010";
-							REGISTER32[3] when "00011";
-							REGISTER32[4] when "00100";
-							REGISTER32[5] when "00101";
-							REGISTER32[6] when "00110";
-							REGISTER32[7] when "00111";
-							REGISTER32[8] when "01000";
-							REGISTER32[9] when "01001";
-							REGISTER32[10] when "01010";
-							REGISTER32[11] when "01011";
-							REGISTER32[12] when "01100";
-							REGISTER32[13] when "01101";
-							REGISTER32[14] when "01110";
-							REGISTER32[15] when "01111";
-							REGISTER32[16] when "10000";
-							REGISTER32[17] when "10001";
-							REGISTER32[18] when "10010";
-							REGISTER32[19] when "10011";
-							REGISTER32[20] when "10100";
-							REGISTER32[21] when "10101";
-							REGISTER32[22] when "10110";
-							REGISTER32[23] when "10111";
-							REGISTER32[24] when "11000";
-							REGISTER32[25] when "11001";
-							REGISTER32[26] when "11010";
-							REGISTER32[27] when "11011";
-							REGISTER32[28] when "11100";
-							REGISTER32[29] when "11101";
-							REGISTER32[30] when "11110";
-							REGISTER32[31] when "11111";
+							reg(1) when "00001",
+							reg(2) when "00010",
+							reg(3) when "00011",
+							reg(4) when "00100",
+							reg(5) when "00101",
+							reg(6) when "00110",
+							reg(7) when "00111",
+							reg(8) when "01000",
+							reg(9) when "01001",
+							reg(10) when "01010",
+							reg(11) when "01011",
+							reg(12) when "01100",
+							reg(13) when "01101",
+							reg(14) when "01110",
+							reg(15) when "01111",
+							reg(16) when "10000",
+							reg(17) when "10001",
+							reg(18) when "10010",
+							reg(19) when "10011",
+							reg(20) when "10100",
+							reg(21) when "10101",
+							reg(22) when "10110",
+							reg(23) when "10111",
+							reg(24) when "11000",
+							reg(25) when "11001",
+							reg(26) when "11010",
+							reg(27) when "11011",
+							reg(28) when "11100",
+							reg(29) when "11101",
+							reg(30) when "11110",
+							reg(31) when "11111",
 							BAD1 when others;
 
 end regfile_arch;
