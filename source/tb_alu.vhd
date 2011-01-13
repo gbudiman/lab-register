@@ -58,7 +58,58 @@ architecture TEST of tb_alu is
 
 -- signal <name> : <type>;
   
-  procedure myOp(
+  procedure myHex(
+    constant intA, intB: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		constant op: IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL toCheck: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aA, aB: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL opcode: OUT STD_LOGIC_VECTOR(2 DOWNTO 0)) IS
+  BEGIN
+    opcode <= op;
+    aA <= intA;
+    aB <= intB;
+    wait for 8 ns;
+    IF (op = 2) THEN
+      IF intA + intB = toCheck THEN
+        report "Addition correct" severity note;
+      ELSE
+        report "Addition FAILED" severity error;
+      END IF;
+    ELSIF (op = 3) THEN
+      IF intA - intB = toCheck THEN
+        report "Subtraction correct" severity note;
+      ELSE
+        report "Subtraction FAILED" severity note;
+      END IF;
+    ELSIF (op = 4) THEN
+			IF intA AND intB = toCheck THEN
+				report "AND op correct" severity note;
+			ELSE
+				report "AND op FAILED" severity note;
+			END IF;
+    ELSIF (op = 5) THEN
+			IF intA NOR intB = toCheck THEN
+				report "NOR op correct" severity note;
+			ELSE
+				report "NOR op FAILED" severity note;
+			END IF;
+    ELSIF (op = 6) THEN
+			IF intA OR intB = toCheck THEN
+				report "OR op correct" severity note;
+			ELSE
+				report "OR op FAILED" severity note;
+			END IF;
+    ELSIF (op = 7) THEN
+			IF intA XOR intB = toCheck THEN
+				report "XOR op correct" severity note;
+			ELSE
+				report "XOR op FAILED" severity note;
+			END IF;
+    END IF;
+    wait for 2 ns;
+  END myHex;
+  
+  procedure myInt(
     constant intA, intB, op: IN integer;
     SIGNAL toCheck: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL aA, aB: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -80,10 +131,34 @@ architecture TEST of tb_alu is
       ELSE
         report "Subtraction FAILED" severity note;
       END IF;
+    ELSIF (op = 4) THEN
+			IF CONV_STD_LOGIC_VECTOR(intA AND intB, 32) = toCheck THEN
+				report "AND op correct" severity note;
+			ELSE
+				report "AND op FAILED" severity note;
+			END IF;
+    ELSIF (op = 5) THEN
+			IF CONV_STD_LOGIC_VECTOR(intA NOR intB, 32) = toCheck THEN
+				report "NOR op correct" severity note;
+			ELSE
+				report "NOR op FAILED" severity note;
+			END IF;
+    ELSIF (op = 6) THEN
+			IF CONV_STD_LOGIC_VECTOR(intA OR intB, 32) = toCheck THEN
+				report "OR op correct" severity note;
+			ELSE
+				report "OR op FAILED" severity note;
+			END IF;
+    ELSIF (op = 7) THEN
+			IF CONV_STD_LOGIC_VECTOR(intA XOR intB, 32) = toCheck THEN
+				report "XOR op correct" severity note;
+			ELSE
+				report "XOR op FAILED" severity note;
+			END IF;
     END IF;
     wait for 2 ns;
-  END myOp;
-  
+  END myInt;
+
 begin
   DUT: alu port map(
                 OPCODE => OPCODE,
@@ -104,18 +179,15 @@ process
     --for i in 0 to 34 loop
       --myShift(x"A5A5A5A5", i, A, B);
     --end loop;
-    myOp(90, 32, 3, OUTPUT, A, B, opcode);
-    myOp(30, 1000, 3, OUTPUT, A, B, opcode);
-    myOp(5000, 1, 3, OUTPUT, A, B, opcode);
-    myOp(1532, 3516, 3, OUTPUT, A, B, opcode);
-    myOp(2147483647, 1, 2, OUTPUT, A, B, opcode);
-    myOp(2147483647, -2147483648, 3, OUTPUT, A, B, opcode);
-    myOp(43613661, -1, 6, OUTPUT, A, B, opcode);
-    myOp(4361, 0, 4, OUTPUT, A, B, opcode);
-    myOp(724882, 0, 7, OUTPUT, A, B, opcode);
-    --myOp(x"3DFBA9C0", x"FFFFFFFF", 6, OUTPUT, A, B, opcode);
-    --myOp(x"9163BA31", x"00000000", 4, OUTPUT, A, B, opcode);
-    --myOp(x"FFFFFFFF", x"00000000", 7, OUTPUT, A, B, opcode);
+    myInt(90, 32, 3, OUTPUT, A, B, opcode);
+    myInt(30, 1000, 3, OUTPUT, A, B, opcode);
+    myInt(5000, 1, 3, OUTPUT, A, B, opcode);
+    myInt(1532, 3516, 3, OUTPUT, A, B, opcode);
+    myInt(2147483647, 1, 2, OUTPUT, A, B, opcode);
+    myInt(2147483647, -2147483648, 3, OUTPUT, A, B, opcode);
+    myHex(x"3DFBA9C0", x"FFFFFFFF", 6, OUTPUT, A, B, opcode);
+    myHex(x"9163BA31", x"00000000", 4, OUTPUT, A, B, opcode);
+    myHex(x"FFFFFFFF", x"00000000", 7, OUTPUT, A, B, opcode);
     wait;
 -- Insert TEST BENCH Code Here
 
