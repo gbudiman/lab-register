@@ -120,13 +120,13 @@ architecture TEST of tb_alu is
     aB <= CONV_STD_LOGIC_VECTOR(intB, 32);
     wait for 8 ns;
     IF (op = 2) THEN
-      IF (intA + intB = CONV_INTEGER(toCheck)) THEN
+      IF CONV_STD_LOGIC_VECTOR(intA + intB, 32) = toCheck THEN
         report "Addition correct" severity note;
       ELSE
         report "Addition FAILED" severity error;
       END IF;
     ELSIF (op = 3) THEN
-      IF intA - intB = CONV_INTEGER(toCheck) THEN
+      IF CONV_STD_LOGIC_VECTOR(intA - intB, 32) = toCheck THEN
         report "Subtraction correct" severity note;
       ELSE
         report "Subtraction FAILED" severity note;
@@ -184,13 +184,13 @@ process
 		myHex(x"0000000A", x"00000007", 0, OUTPUT, A, B, OPCODE);
 		myHex(x"0000000A", x"0000001A", 0, OUTPUT, A, B, OPCODE);
 		-- CHECK SRL
-		myHex(x"0000000A", x"00000001", 1, OUTPUT, A, B, OPCODE);
-		myHex(x"0000000A", x"00000004", 1, OUTPUT, A, B, OPCODE);
-		myHex(x"0000000A", x"00000008", 1, OUTPUT, A, B, OPCODE);
-		myHex(x"0000000A", x"00000010", 1, OUTPUT, A, B, OPCODE);
-		myHex(x"0000000A", x"0000001F", 1, OUTPUT, A, B, OPCODE);
-		myHex(x"0000000A", x"0000000D", 1, OUTPUT, A, B, OPCODE);
-		myHex(x"0000000A", x"00000014", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"00000001", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"00000004", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"00000008", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"00000010", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"0000001F", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"0000000D", 1, OUTPUT, A, B, OPCODE);
+		myHex(x"A000000A", x"00000014", 1, OUTPUT, A, B, OPCODE);
 		-- CHECK ADD
 		-- CHECK SUB
 			-- both small number
