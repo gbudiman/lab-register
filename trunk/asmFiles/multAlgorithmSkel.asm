@@ -26,7 +26,7 @@ multiplier_is_0:						# LSB = 0, do next iteration
 	srl		$t1, $t1, 1					# shift right multiplier
 	sll		$t2, $t2, 1					# shift left multiplicand
 	addiu	$s5, $s5, 1					# increment iterator
-	jal		test_for_iteration
+	j 		test_for_iteration
 	#			< END >
 fin:
 	srl		$s7, $s5, 3					# SRL 3 times on 32 to yield 4
