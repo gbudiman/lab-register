@@ -232,6 +232,8 @@ process
 			-- any results in negative
 			myInt(719043, -13246147, 2, OUTPUT, A, B, OPCODE);
 			myInt(-13516, 123, 3, OUTPUT, A, B, OPCODE);
+			-- additional test vectors
+			myHex(x"00000001", x"7FFDFFFF", 2, OUTPUT, A, B, OPCODE);
 		-- CHECK AND
 		myHex(x"A5A5A5A5", x"00000000", 4, OUTPUT, A, B, OPCODE);
 		-- CHECK NOR
