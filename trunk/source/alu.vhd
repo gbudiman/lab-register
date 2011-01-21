@@ -60,9 +60,12 @@ BEGIN
   S_SRL <= "0000000000000000" &S_SRL_3(31 DOWNTO 16) WHEN B(4) = '1' ELSE S_SRL_3;
   
   -- Overflow flag, only occurs during addition/subtraction OPCODE
-  OVERFLOW <= '1' WHEN (carry_plus(32) /= carry_plus(31) AND OPCODE = "010")
-                    OR (carry_minus(32) /= carry_minus(31) AND OPCODE = "011") ELSE '0';
-  
+  --OVERFLOW <= '1' WHEN (carry_plus(32) /= carry_plus(31) AND OPCODE = "010")
+  --                  OR (carry_minus(32) /= carry_minus(31) AND OPCODE = "011") ELSE '0';
+  OVERFLOW <= carry_plus(32) XOR carry_plus(31) WHEN OPCODE = "010" ELSE
+              carry_minus(32) XOR carry_minus(31) WHEN OPCODE = "011" ELSE
+              '0';  
+              
   -- Set-up proper carry-in for addition/subtraction
   carry_plus(0) <= '0';
   carry_minus(0) <= '1';
