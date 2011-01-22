@@ -3,17 +3,18 @@ USE IEEE.std_logic_1164.all;
 
 ENTITY pcpack IS
   PORT(ZERO: IN STD_LOGIC;
-    BRANCH: IN STD_LOGIC;
+    BRANCH, JUMP: IN STD_LOGIC;
     HALT, CLK, RESET: IN STD_LOGIC;
+    JUMP_ADDRESS: IN STD_LOGIC_VECTOR(25 DOWNTO 0);
     SIGN_EXTENDED: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     OUT_PC: OUT STD_LOGIC_VECTOR(31 DOWNTO 0));
 END pcpack;
 
 ARCHITECTURE cpcpak OF pcpack IS
-  SIGNAL pc, addPc, muxPc, nextPc: STD_LOGIC_VECTOR(31 DOWNTO 0);  
+  SIGNAL pc, addPc, muxPc, bufferPc, jumpPc, nextPc: STD_LOGIC_VECTOR(31 DOWNTO 0);  
   SIGNAL branchDecs: STD_LOGIC;
   SIGNAL carry, carryMux: STD_LOGIC_VECTOR(32 DOWNTO 0);
-  SIGNAL constantFour, inShift: STD_LOGIC_VECTOR(31 DOWNTO 0);
+  SIGNAL constantFour, inShift, jumpShift: STD_LOGIC_VECTOR(31 DOWNTO 0);
 BEGIN
   PCREG: PROCESS(nextPc, RESET, CLK)
   BEGIN
@@ -42,9 +43,12 @@ BEGIN
   end generate ripple_adder_2;
   
   branchDecs <= BRANCH AND ZERO;
-  
+  jumpPc <= addPc(31 DOWNTO 28) & JUMP_ADDRESS(25 DOWNTO 0) & "00";
+      
   nextPc <= pc WHEN HALT = '1' ELSE
-            addPc WHEN branchDecs = '0' 
-            ELSE muxPc;
+            jumpPc WHEN JUMP = '1' ELSE
+            addPc WHEN branchDecs = '0' ELSE
+            muxPc;
+              
 END cpcpak;
     

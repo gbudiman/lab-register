@@ -17,7 +17,8 @@ VPATH= $(WORKDIR)
 
 registerFile_tb.vhd : registerFile.vhd
 regTest.vhd: registerFile.vhd
-
+aluTest.vhd: alu.vhd bintohexDecoder.vhd
+tb_alu.vhd: alu.vhd
 # end VHDL files (keep this)
 
 # Cache rules (cache labs)
