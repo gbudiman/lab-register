@@ -37,10 +37,12 @@ architecture TEST of tb_pcpack is
     PORT(
          ZERO : IN STD_LOGIC;
          BRANCH : IN STD_LOGIC;
+         JUMP : IN STD_LOGIC;
          HALT : IN STD_LOGIC;
          CLK : IN STD_LOGIC;
          RESET : IN STD_LOGIC;
          SIGN_EXTENDED: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+         JUMP_ADDRESS: IN STD_LOGIC_VECTOR(25 DOWNTO 0);
          OUT_PC: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
   end component;
@@ -48,10 +50,12 @@ architecture TEST of tb_pcpack is
 -- Insert signals Declarations here
   signal ZERO : STD_LOGIC;
   signal BRANCH : STD_LOGIC;
+  signal JUMP : STD_LOGIC;
   signal HALT : STD_LOGIC;
   signal CLK : STD_LOGIC;
   signal RESET : STD_LOGIC;
   signal SIGN_EXTENDED: STD_LOGIC_VECTOR(31 DOWNTO 0);
+  signal JUMP_ADDRESS: STD_LOGIC_VECTOR(25 DOWNTO 0);
   signal OUT_PC: STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 -- signal <name> : <type>;
@@ -60,10 +64,12 @@ begin
   DUT: pcpack port map(
                 ZERO => ZERO,
                 BRANCH => BRANCH,
+                JUMP => JUMP,
                 HALT => HALT,
                 CLK => CLK,
                 RESET => RESET,
                 SIGN_EXTENDED => SIGN_EXTENDED,
+                JUMP_ADDRESS => JUMP_ADDRESS,
                 OUT_PC => OUT_PC
                 );
 
@@ -83,7 +89,9 @@ process
     HALT <= '0';
     ZERO <= '0';
     BRANCH <= '0';
+    JUMP <= '0';
     SIGN_EXTENDED <= x"00000000";
+    JUMP_ADDRESS <= "00" & x"000000";
     wait for 5 ns;
     
     RESET <= '0';
@@ -98,8 +106,15 @@ process
     report "PC should be decremented by 8" severity note;
     SIGN_EXTENDED <= x"FFFFFFFD";
     wait for 100 ns;
-    HALT <= '1';
+    report "Jump to x08" severity note;
+    JUMP_ADDRESS <= "00" & x"000002";
     BRANCH <= '0';
+    JUMP <= '1';
+    wait for 50 ns;
+    JUMP <= '0';
+    report "Add normally again" severity note;
+    wait for 100 ns;
+    HALT <= '1';
     report "PC should halt" severity note;
     wait;
 -- Insert TEST BENCH Code Here
