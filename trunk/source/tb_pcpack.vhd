@@ -34,26 +34,20 @@ architecture TEST of tb_pcpack is
   end;
 
   component pcpack
-    PORT(
-         ZERO : IN STD_LOGIC;
-         BRANCH : IN STD_LOGIC;
-         JUMP : IN STD_LOGIC;
-         HALT : IN STD_LOGIC;
-         CLK : IN STD_LOGIC;
-         RESET : IN STD_LOGIC;
-         SIGN_EXTENDED: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-         JUMP_ADDRESS: IN STD_LOGIC_VECTOR(25 DOWNTO 0);
-         OUT_PC: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+    PORT(CLK, RESET: IN STD_LOGIC;
+      HALT, JREG, BRANCHDECS, JUMP, MEMWAIT: IN STD_LOGIC;
+      JUMP_ADDRESS: IN STD_LOGIC_VECTOR(25 DOWNTO 0);
+      JUMP_REGISTER: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+      SIGN_EXTENDED: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+      JAL_ADDRESS: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      OUT_PC: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
   end component;
 
 -- Insert signals Declarations here
-  signal ZERO : STD_LOGIC;
-  signal BRANCH : STD_LOGIC;
-  signal JUMP : STD_LOGIC;
-  signal HALT : STD_LOGIC;
-  signal CLK : STD_LOGIC;
-  signal RESET : STD_LOGIC;
+  signal CLK, RESET : STD_LOGIC;
+  signal HALT, JREG, BRANCHDECS, JUMP, MEMWAIT : STD_LOGIC;
+  signal JUMP_REGISTER : STD_LOGIC_VECTOR(31 DOWNTO 0);
   signal SIGN_EXTENDED: STD_LOGIC_VECTOR(31 DOWNTO 0);
   signal JUMP_ADDRESS: STD_LOGIC_VECTOR(25 DOWNTO 0);
   signal OUT_PC: STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -62,14 +56,16 @@ architecture TEST of tb_pcpack is
 
 begin
   DUT: pcpack port map(
-                ZERO => ZERO,
-                BRANCH => BRANCH,
-                JUMP => JUMP,
-                HALT => HALT,
                 CLK => CLK,
                 RESET => RESET,
-                SIGN_EXTENDED => SIGN_EXTENDED,
+                HALT => HALT,
+                JREG => JREG,
+                BRANCHDECS => BRANCHDECS,
+                JUMP => JUMP,
+                MEMWAIT => MEMWAIT,
                 JUMP_ADDRESS => JUMP_ADDRESS,
+                JUMP_REGISTER => JUMP_REGISTER,
+                SIGN_EXTENDED => SIGN_EXTENDED,
                 OUT_PC => OUT_PC
                 );
 
@@ -87,32 +83,41 @@ process
   begin
     RESET <= '1';
     HALT <= '0';
-    ZERO <= '0';
-    BRANCH <= '0';
+    BRANCHDECS <= '0';
     JUMP <= '0';
+    JREG <= '0';
+    MEMWAIT <= '0';
     SIGN_EXTENDED <= x"00000000";
     JUMP_ADDRESS <= "00" & x"000000";
+    JUMP_REGISTER <= x"00000004";
     wait for 5 ns;
     
     RESET <= '0';
     
     wait for 400 ns;
-    report "Branch should not occur yet" severity note;
-    BRANCH <= '1';
+    report "Test for memwait. PC should stay" severity note;
+    MEMWAIT <= '1';
     wait for 100 ns;
-    report "PC should 4-increment normally" severity note;
-    ZERO <= '1';
+    MEMWAIT <= '0';
+    report "PC increment normally" severity note;
     wait for 100 ns;
-    report "PC should be decremented by 8" severity note;
-    SIGN_EXTENDED <= x"FFFFFFFD";
-    wait for 100 ns;
-    report "Jump to x08" severity note;
-    JUMP_ADDRESS <= "00" & x"000002";
-    BRANCH <= '0';
     JUMP <= '1';
+    JUMP_ADDRESS <= "00" & x"000004";
     wait for 50 ns;
+    report "PC should points to 0x10";
     JUMP <= '0';
     report "Add normally again" severity note;
+    wait for 100 ns;
+    BRANCHDECS <= '1';
+    SIGN_EXTENDED <= x"00000008";
+    wait for 50 ns;
+    report "Branch 0x20 forward";
+    BRANCHDECS <= '0';
+    wait for 100 ns;
+    JREG <= '1';
+    report "PC reset to 0x4";
+    wait for 50 ns;
+    JREG <= '0';
     wait for 100 ns;
     HALT <= '1';
     report "PC should halt" severity note;
