@@ -2,17 +2,17 @@ LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 
 ENTITY pcpack IS
-  PORT(ZERO: IN STD_LOGIC;
-    BRANCH, JUMP: IN STD_LOGIC;
-    HALT, CLK, RESET: IN STD_LOGIC;
+  PORT(CLK, RESET: IN STD_LOGIC;
+    HALT, JREG, BRANCHDECS, JUMP, MEMWAIT: IN STD_LOGIC;
     JUMP_ADDRESS: IN STD_LOGIC_VECTOR(25 DOWNTO 0);
+    JUMP_REGISTER: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGN_EXTENDED: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    JAL_ADDRESS: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
     OUT_PC: OUT STD_LOGIC_VECTOR(31 DOWNTO 0));
 END pcpack;
 
 ARCHITECTURE cpcpak OF pcpack IS
-  SIGNAL pc, addPc, muxPc, bufferPc, jumpPc, nextPc: STD_LOGIC_VECTOR(31 DOWNTO 0);  
-  SIGNAL branchDecs: STD_LOGIC;
+  SIGNAL pc, addPc, muxPc, prePc, bufferPc, jumpPc, jregPc, nextPc: STD_LOGIC_VECTOR(31 DOWNTO 0);  
   SIGNAL carry, carryMux: STD_LOGIC_VECTOR(32 DOWNTO 0);
   SIGNAL constantFour, inShift, jumpShift: STD_LOGIC_VECTOR(31 DOWNTO 0);
 BEGIN
@@ -42,13 +42,13 @@ BEGIN
     carryMux(s + 1) <= (addPc(s) AND inShift(s)) OR (inShift(s) AND carryMux(s)) OR (carryMux(s) AND addPc(s));
   end generate ripple_adder_2;
   
-  branchDecs <= BRANCH AND ZERO;
   jumpPc <= addPc(31 DOWNTO 28) & JUMP_ADDRESS(25 DOWNTO 0) & "00";
-      
-  nextPc <= pc WHEN HALT = '1' ELSE
-            jumpPc WHEN JUMP = '1' ELSE
-            addPc WHEN branchDecs = '0' ELSE
-            muxPc;
+  
+  prePc <= muxPc WHEN BRANCHDECS = '1' ELSE addPc;
+  bufferPc <= jumpPc WHEN JUMP = '1' ELSE prePc;
+  jregPc <= JUMP_REGISTER WHEN JREG = '1' ELSE bufferPc; 
+  nextPc <= pc WHEN HALT = '1' OR MEMWAIT = '1' ELSE jregPc;
+  JAL_ADDRESS <= addPc;
               
 END cpcpak;
     
