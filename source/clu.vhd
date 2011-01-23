@@ -5,7 +5,8 @@ ENTITY clu IS
   PORT(QIN: IN STD_LOGIC_VECTOR(5 DOWNTO 0);
     LCTL: IN STD_LOGIC_VECTOR(5 DOWNTO 0);
     REGDST, EXTSIGN, MEMTOREG, ALUSRC, REGWRITE, MEMWRITE, HALT: OUT STD_LOGIC;
-    JREG, JUMP, LINK, BEQ, BNE, SETU, UPPER: OUT STD_LOGIC;
+    JREG, JUMP, LINK, BEQ, BNE, UPPER: OUT STD_LOGIC;
+    SETU: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
     ALUCTL: OUT STD_LOGIC_VECTOR(2 DOWNTO 0));
 END CLU;
 
@@ -41,4 +42,38 @@ BEGIN
           oJAL    WHEN QIN = "000011" ELSE -- JAL
           oHALT   WHEN QIN = "111111" ELSE -- HALT
           oX; -- NOP or UNRECOGNIZED OPERATION
+          
+  WITH dcOp SELECT
+    REGDST <= '1' WHEN oADDU | oAND | oNOR | oOR | oSLT | oSLTU | oSLL | oSRL | oSUBU | oXOR,
+              '0' WHEN OTHERS;
+  WITH dcOp SELECT
+    ALUSRC <= '1' WHEN oADDU | oAND | oNOR | oOR | oSLT | oSLTU | oSLL | oSRL | oSUBU | oXOR | oBNE | oBEQ,
+              '0' WHEN OTHERS;
+  WITH dcOp SELECT
+    EXTSIGN <= '1' WHEN oADDIU | oLW | oSLTI | oSW | oJ | oJAL,
+               '0' WHEN OTHERS;
+  WITH dcOp SELECT
+    REGWRITE <= '0' WHEN oJR | oBEQ | oBNE | oSW | oJ | oHALT | oX,
+                '1' WHEN OTHERS;
+                
+  JREG <= '1' WHEN dcOp = oJR ELSE '0';
+  JUMP <= '1' WHEN dcOp = oJ OR dcOp = oJAL ELSE '0';
+  LINK <= '1' WHEN dcOp = oJAL ELSE '0';
+  BEQ <= '1' WHEN dcOp = oBEQ ELSE '0';
+  BNE <= '1' WHEN dcOp = oBNE ELSE '0';
+  SETU <= "01" WHEN dcOp = oSLT OR dcOp = oSLTI ELSE
+          "11" WHEN dcOp = oSLTU OR dcOp = oSLTIU ELSE "00";
+  UPPER <= '1' WHEN dcOp = oLUI ELSE '0';
+  ALUCTL <= "000" WHEN dcOp = oSLL ELSE
+            "001" WHEN dcOp = oSRL ELSE
+            "010" WHEN dcOp = oADDU OR dcOp = oADDIU OR dcOp = oLW OR dcOp = oSW ELSE
+            "011" WHEN dcOp = oSUBU OR dcOp = oBEQ OR dcOp = oBNE ELSE
+            "100" WHEN dcOp = oAND OR dcOP = oANDI ELSE
+            "101" WHEN dcOp = oNOR ELSE
+            "110" WHEN dcOp = oOR OR dcOp = oORI ELSE
+            "111" WHEN dcOp = oXOR OR dcOp = oXORI;
+  MEMTOREG <= '1' WHEN dcOp = oLW ELSE '0';
+  HALT <= '1' WHEN dcOp = oHALT ELSE '0';
+  MEMWRITE <= '1' WHEN dcOp = oSW ELSE '0';
+  
 END PCCLU;
