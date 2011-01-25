@@ -10,5 +10,5 @@ END aluSrcMux;
 
 ARCHITECTURE pcAluSrcMux OF aluSrcMux IS
 BEGIN
-  ROUT <= R0 WHEN ALUSRC = '1' ELSE R1;
+  ROUT <= R0 WHEN ALUSRC = '0' ELSE R1;
 END pcAluSrcMux;
