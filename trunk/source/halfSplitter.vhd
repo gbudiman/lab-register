@@ -8,5 +8,5 @@ END halfSplitter;
 
 ARCHITECTURE pchs OF halfSplitter IS
 BEGIN
-  DOUT <= DIN(31 DOWNTO 16);
+  DOUT <= DIN(15 DOWNTO 0);
 END pchs;
