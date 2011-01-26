@@ -19,9 +19,10 @@ registerFile_tb.vhd : registerFile.vhd
 regTest.vhd: registerFile.vhd
 aluTest.vhd: alu.vhd bintohexDecoder.vhd
 tb_alu.vhd: alu.vhd
+cpuTest.vhd: cpu.vhd bintohexDecoder.vhd
 tb_cpu.vhd: cpu.vhd
 cpu.vhd: mycpu.vhd
-mycpu.vhd: alu.vhd aluSrcMux.vhd branchMux.vhd clu.vhd delayer.vhd extender.vhd halfSplitter.vhd loadUpperMux.vhd memToRegMux.vhd pcpack.vhd ramd.vhd rami.vhd registerFile.vhd regMux.vhd setterMux.vhd setWriteMux.vhd splitter.vhd zeroGen.vhd
+mycpu.vhd: alu.vhd aluSrcMux.vhd branchMux.vhd clu.vhd delayer.vhd extender.vhd halfSplitter.vhd loadUpperMux.vhd memToRegMux.vhd pcpack.vhd ramd.vhd rami.vhd registerFile.vhd regMux.vhd setterMux.vhd setWriteMux.vhd splitter.vhd zeroGen.vhd 
 # end VHDL files (keep this)
 
 # Cache rules (cache labs)
