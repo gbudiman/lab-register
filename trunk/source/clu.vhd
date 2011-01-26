@@ -50,7 +50,7 @@ BEGIN
     ALUSRC <= '1' WHEN oADDU | oAND | oNOR | oOR | oSLT | oSLTU | oSLL | oSRL | oSUBU | oXOR | oBNE | oBEQ,
               '0' WHEN OTHERS;
   WITH dcOp SELECT
-    EXTSIGN <= '1' WHEN oADDIU | oLW | oSLTI | oSW | oJ | oJAL | oBNE | oBEQ,
+    EXTSIGN <= '1' WHEN oADDIU | oLW | oSLTI | oSLTIU | oSW | oJ | oJAL | oBNE | oBEQ,
                '0' WHEN OTHERS;
   WITH dcOp SELECT
     REGWRITE <= '0' WHEN oJR | oBEQ | oBNE | oSW | oJ | oHALT | oX,
