@@ -8,7 +8,7 @@ ENTITY delayer IS
 END delayer;
 
 ARCHITECTURE seqD of delayer IS
-  TYPE myState IS (S0, S1, S2);
+  TYPE myState IS (S0, S1);
   SIGNAL state, nextState: myState;
 BEGIN
   tld: PROCESS(CLK, RESET, nextState)
@@ -29,9 +29,9 @@ BEGIN
         ELSE nextState <= S0;
         END IF;
       WHEN S1 =>
-        nextState <= S2;
-      WHEN S2 =>
         nextState <= S0;
+      --WHEN S2 =>
+      --  nextState <= S0;
     END CASE;
   END PROCESS nsl;
   
