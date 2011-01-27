@@ -19,11 +19,13 @@ BEGIN
   end generate ripple_sub;
   
   s_SUB(32) <= '0' XOR '1' XOR carry_minus(32);
-  
+  -- SETU: 11 - SLTU/SLTIU
+  --     : 01 - SLT/SLTI
   CONTROL <= SETU(0);
   
-  VAL <= x"00000001" 
-    WHEN (SETU = "01" AND s_SUB(31) = '1' AND ((carry_minus(32) XOR carry_minus(31)) = '0') )
-      OR (SETU = "11" AND s_SUB(32) = '1')
-    ELSE x"00000000";
+  VAL <= x"00000001" WHEN
+    (SETU = "11" AND s_SUB(32) = '1')
+    OR (SETU = "01" AND s_SUB(31) = '1' AND ((carry_minus(31) XOR carry_minus(32)) = '0'))
+    OR (SETU = "01" AND s_SUB(31) = '0' AND ((carry_minus(31) XOR carry_minus(32)) = '1'))
+  ELSE x"00000000";
 END pcsm;
